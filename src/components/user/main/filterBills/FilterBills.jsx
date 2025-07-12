@@ -2,11 +2,13 @@ import React, { useContext, useState } from 'react'
 import empServices from '../../../../service/empServices'
 import { contextApi } from '../../../context/Context'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 const FilterBills = () => {
   const [showCompanyNames,setShowCompanyName]=useState(false)
   const [conpanyName,setComoantNames]=useState([])
   const {globalState}=useContext(contextApi)
+  const navigate=useNavigate()
   const [queries,setQueries]=useState({
   PoNo:"",
   fromWorkCompletionDate:"",
@@ -25,8 +27,38 @@ const FilterBills = () => {
   }
   const handelSubmit=(e)=>{
     e.preventDefault()
-    console.log(queries);
+    // console.log(queries);
+// let {PoNo,fromInvoicedate,fromWorkCompletionDate,toInvoiceDate,toWorkCompletionDate,companies}=queries
+//     const queryArray=[]
+//     PoNo&&queryArray.push(`PoNo=${PoNo}`)
+//     fromInvoicedate&&queryArray.push(`fromInvoicedate=${fromInvoicedate}`)
+//     fromWorkCompletionDate&&queryArray.push(`fromWorkCompletionDate=${fromWorkCompletionDate}`)
+//     toInvoiceDate&&queryArray.push(`toInvoiceDate=${toInvoiceDate}`)
+//     toWorkCompletionDate&&queryArray.push(`toWorkCompletionDate=${toWorkCompletionDate}`)
+//     companies&&queryArray.push(`companies=${companies}`)
+//     // console.log(queryArray);
+//     const query=queryArray.join("&")
+let query=new URLSearchParams(queries).toString();
+// console.log(query);
+(async()=>{
+  try {
+    let data=await empServices.filteredBills(globalState.token,query)
+    console.log(data);
+    if(data.status==200 && data.data.count==0){
+      toast.error("No Bills Found")
+    }else if(data.status==200 && data.data.count>0){
+      toast.success("bills fetched succesfully")
+      navigate("/home/viewBills",{state:data.data.bills})
+    }else{
+      toast.error("Something went wrong")
+    }
     
+  } catch (error) {
+      toast.error("Something went wrong")
+    
+  }
+})()
+
   }
   const handelShow=()=>{
     setShowCompanyName(!showCompanyNames);
@@ -47,7 +79,7 @@ try {
       
     })();
   }
-  console.log(conpanyName);
+  // console.log(conpanyName);
   
   return (
      <div className='bg-[#efefef] size-full flex justify-center items-center'>
