@@ -8,6 +8,7 @@ import Addbills from "../components/user/main/addbiil/Addbills";
 import FilterBills from "../components/user/main/filterBills/FilterBills";
 import UpdateBills from "../components/user/main/updateBills/UpdateBills";
 import ViewBills from "../components/viewBill/ViewBills";
+import PrivateRoute from "../components/helper/PrivateRoute";
 
 let routes=createBrowserRouter([
     {
@@ -19,7 +20,7 @@ let routes=createBrowserRouter([
         element:<Login></Login>
     },{
         path:"/home",
-        element:<Main></Main>,
+        element:<PrivateRoute><Main></Main></PrivateRoute>,
         children:[
             {
                 index:true,
